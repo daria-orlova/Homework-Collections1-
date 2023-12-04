@@ -14,37 +14,37 @@ import java.util.List;
 @Service
 public class EmployeeService {
 
-    private static final int MAX_EMPLOYEES = 10;
-    private final List<Employee> employees = new ArrayList<>();
+    private final Map<String, Employee> employees;
+    public EmployeeService() {
+        this.employees = new HashMap<>();
+    }
 
-    public void add(String firstName, String lastName) {
-        if (employees.size() == MAX_EMPLOYEES) {
+    public Employee add(String firstName, String lastName) {
+        Employee employee = new Employee(firstName, lastName)
+        if (employees.containsKey(employee.getFullName())) {
             throw new EmployeeStoragelsFullException();
         }
-        Employee employee = new Employee(firstName, lastName);
-        if (employees.contains(employee)) {
-            throw new EmployeeAlreadyAddedException();
-        }
-        employees.add(employee);
+        employees.put(employee.getFullName(), employee);
+        return employee;
     }
 
     public Employee remove(String firstName, String lastName) {
         Employee employee = new Employee(firstName, lastName);
-        if (!employees.remove(employee)) {
-            throw new EmployeeNotFoundException();
+        if (employees.containsKey(employee.getFullName())) {
+            return employee.remove(employee.getFullName());
         }
-        return employee;
+        throw new EmployeeNotFoundException();
     }
 
     public Employee find(String firstName, String lastName) {
         Employee employee = new Employee(firstName, lastName);
-        if (!employees.contains(employee)) {
-            throw new EmployeeNotFoundException();
+        if (employees.containsKey(employee.getFullName())) {
+            return employee.get(employee.getFullName());
         }
-        return employee;
+        throw new EmployeeNotFoundException();
     }
 
-    public List<Employee> findAll() {
-        return Collections.unmodifiableList(employees);
+    public Collection<Employee> findAll() {
+        return Collections.unmodifiableCollection(employees.values());
     }
 }
